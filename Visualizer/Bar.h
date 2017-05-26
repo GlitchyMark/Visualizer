@@ -2,12 +2,15 @@
 #include "Led.h"
 #include <SFML/Graphics.hpp>
 
+using namespace sf;
+using namespace std;
+
 class Bar
 {
 public:
 	Bar();
 	~Bar();
-	Led * getLeds();
+	vector<Led> getLeds();
 	void tick();
 	void setID(int ID);
 	void addHeight(int h);

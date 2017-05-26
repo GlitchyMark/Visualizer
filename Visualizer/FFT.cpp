@@ -1,6 +1,9 @@
 #include "FFT.h"
 
 //Credits for the origional version of this class to Muzkaw - https://www.youtube.com/watch?v=LqUuMqfW1PE
+///TODO: Optimize the fuck out of everything
+
+int sensivity = 50;
 
 FFT::FFT(string const& _path, int const& _bufferSize)
 {
@@ -20,21 +23,20 @@ FFT::FFT(string const& _path, int const& _bufferSize)
 
 	//sample.resize(bufferSize);
 }
-
+//Does.. Something
 void FFT::hammingWindow()
 {
-	mark = 0.00;
-		for (int i(mark); i < bufferSize + mark; i++)
+		for (int i(0); i < bufferSize; i++)
 		{
 			if (window.size() < i || sample.size() < i || buffer.getSampleCount() < i)
 				break;
 			try {
-				sample[i - mark] = Complex(buffer.getSamples()[i] * window[i], 0);
+				sample[i] = Complex(buffer.getSamples()[i] * window[i], 0);
 			}
 			catch (exception) {}
-			//VA1[i - mark] = Vertex(Vector2f(20, 250) + Vector2f((i - mark) / (float)bufferSize * 700, sample[i - mark].real()*0.005), Color::Color(255, 0, 0, 50));
 		}
 }
+//Sets up frequencys... or something
 void FFT::fft(CArray &x)
 {
 	const int N = x.size();
@@ -54,13 +56,16 @@ void FFT::fft(CArray &x)
 	}
 }
 
+
+//Not used
 string FFT::dPrint()
 {
 	return to_string(1);
 }
-
+//Called every tick
 void FFT::update()
 {
+	//Grab the current buffer to ignore threading issues
 	buffer = tempbuffer;
 	if (buffer.getSampleCount() == 0 || buffer.getDuration().asMilliseconds() < 5)
 	{
@@ -71,6 +76,7 @@ void FFT::update()
 	sampleCount = buffer.getSampleCount();
 	sample.resize(bufferSize);
 
+	//Do Muzwak's magic
 	hammingWindow();
 
 	bin = CArray(sample.data(), bufferSize);
@@ -80,13 +86,6 @@ void FFT::update()
 	float max = 100000;
 }
 
-RectangleShape cRect(int number, float r_height)
-{
-	sf::RectangleShape rectangle(sf::Vector2f(20, r_height));
-	rectangle.setPosition((20+5) * number, 800 - r_height);
-	rectangle.setFillColor(sf::Color::Green);
-	return rectangle;
-}
 
 
 /*int FFT::rangeMax(int start, int end, CArray ary)
@@ -148,10 +147,12 @@ float FFT::rangeAverage(int start, int end, CArray ary)
 	dbgp = to_string((total * 2000) / (ticks));
 	return (total*2000)/(ticks);
 }
+//This lies, it isn't the frequency value, but the converted value to our ears on a logrithmic scale
 float FFT::getFreqValue(float i)
 {
-	return ((logf(i) / logf(bufferSize / 2.f)));
+	return ((log(i) / log(min(bufferSize / 2.f, 20000.f)))) * .5f; //*.9f is dumb, but works
 }
+
 vector<int> FFT::getBarValues(int bars)
 {
 	vector<int> brs;
@@ -163,31 +164,26 @@ vector<int> FFT::getBarValues(int bars)
 	//cout << to_string(preI) << endl;
 
 	//starting value of grid
-	float s = (logf(3.235f) / logf(min(bufferSize / 2.f, 20000.f)));
+	//float s = (logf(3.235) / logf(min(bufferSize / 2.f, 20000.f)));
 	//
 	float e = 1;
 
 
 	//Low and high, Range doesn't correlate to frequency.
 	float low = 3;
-	float high = 200;
+	float high =3;//(2 - (min(bufferSize / 2.f, 20000.f) / (high));
 	preI = getFreqValue(low);
 	bool started = false;
-	for (float i(3); i < bufferSize / 2.f; i+=1.01)
+	for (float i(3); i < min(bufferSize / 2.f, 20000.f); i+=1.01)
 	{
-		//Vector2f samplePosition((abs(logf(i) / logf(bufferSize / 2.f) - s*(1))* (1+s+.5)), abs(bin[(int)i]));
+		//Get fewVal of bin?
+		Vector2f samplePosition(getFreqValue(i), (abs(bin[(int)i])));
 
-		Vector2f samplePosition(logf(i) / logf(bufferSize / 2.f), abs(bin[(int)i]));
+		float xVal = (samplePosition.x - getFreqValue(low)) * high;
 
-		//if (!(low < samplePosition.x < high))
-		//+	continue;
-
-		float xVal = (samplePosition.x - getFreqValue(low)) * (2 - getFreqValue(high) / getFreqValue(bufferSize /2));
-
-
+		//cout << to_string(2 - getFreqValue(high) / getFreqValue(min(bufferSize / 2.f, 20000.f))) << endl;
 		int cbar = floor((xVal)*bars);
 
-		//cout << "Low: " << cbar << " Frequency: " << i << " xValue: " << to_string((xVal)) << endl;
 
 
 		if (xVal <= 0 && !started)
@@ -195,7 +191,6 @@ vector<int> FFT::getBarValues(int bars)
 			started = true;
 			preI = i;
 		}
-		//cout << bin.size() << endl;
 		//cout << to_string(floor((samplePosition.x*(1+(s/e))-s)*bars)) << endl;
 
 		if (brs.size() < cbar)
@@ -203,8 +198,8 @@ vector<int> FFT::getBarValues(int bars)
 
 		if (cb != cbar && cbar >= 0)
 		{
-			int lmax = rangeMax(preI, i, bin) / 300 *75;
-			if (lmax > 70000) lmax = 70000;
+			int lmax = rangeMax(preI, i, bin) / 500 *sensivity;
+			if (lmax > 100000) lmax = 100000;
 			brs[cb] = lmax;
 
 			//cout << "Low: " << cbar << " Frequency: " << i << " xValue: " << to_string((xVal)) << " bin: " << to_string(lmax)<< endl;
@@ -213,54 +208,13 @@ vector<int> FFT::getBarValues(int bars)
 			{
 				for (int inc = cb + 1; inc < cbar; inc++)
 				{
-					//cout << "no bar Value for: " << cb + 1 << endl;
 					brs[inc] = (brs[cb] + lmax) / 2;
 				}
-				//cout << "We did it!" << endl;
 			}
 			preI = i;
 			cb = cbar;
 		}
-
+		//brs[bars-1] = 100000;
 	}
 	return brs;
-}
-void FFT::draw(RenderWindow &window)
-{
-	int max = 100000;
-
-	const int bars = 32;
-	int brs[bars];
-	//int divisor = floor(bin.size() / bars);
-
-	int cb = 0;
-	int preI = 0;
-	for (float i(1); i < min(bufferSize / 2.f, 20000.f); i *= 1.005)
-	{
-		Vector2f samplePosition(log(i) / log(min(bufferSize / 2.f, 20000.f)), abs(bin[(int)i]));
-		int cbar = floor((samplePosition.x)*bars);
-		//cout << to_string(samplePosition.x) << endl;
-		if(cb != cbar)
-		{
-		int lmax = rangeMax(preI, i , bin);
-		window.draw(cRect(cbar, lmax / 30 + 30));
-		preI = i;
-		cb = cbar;
-		}
-
-	}
-	/*for (int i = 0; i < bars; i++)
-	{
-		int lmax = 0;//rangeMax(i*divisor, (i + 1)*divisor, bin);
-		//cout << to_string((log(i*divisor))*1000) << endl;
-		lmax = rangeMax((log(i*divisor))*divisor, (log((i+1)*divisor))*divisor , bin);
-		window.draw(cRect(i, lmax/10 + 30));
-	}*/
-	/*for (int i = 0; i < bars; i++)
-	{
-		window.draw(cRect(i, abs(bin[(int)i]) / max * 500));
-	}*/
-	//window.draw(VA1);
-	//window.draw(VA3);
-	//window.draw(VA2);
 }

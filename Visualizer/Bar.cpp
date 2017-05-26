@@ -1,7 +1,7 @@
 #include "Bar.h"
 
 
-float mH = 800;
+float mH = 100000;
 
 Bar::Bar()
 {
@@ -11,20 +11,23 @@ Bar::~Bar()
 {
 }
 
-Led* Bar::getLeds()
+vector<Led> Bar::getLeds()
 {
-	Led *led;
-	led = new Led[8];
+	vector<Led> led;
 	for (int i = 0; i < 8; i++)
 	{
+		led.push_back(Led());
+		led[i].setID(i);
 		led[i].red = (int)(((float)height) / mH * 255)*i / 8;
-		led[i].green = (int)(255- (((float)height) /mH*255)*i / 8);
+		led[i].green = (int)(255 - (((float)height) / mH * 255)*i / 8);
 	}
+	return led;
 
 }
+
 void Bar::tick()
 {
-	height-=5;
+	height-=999999;
 	if (height < 10)
 		height = 10;
 }

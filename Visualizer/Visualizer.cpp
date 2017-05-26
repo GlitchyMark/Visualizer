@@ -10,13 +10,13 @@
 
 const int led_size = 100;
 
-const int barCount = 8;//4 Sides, 8 Bars each Side - Should be 32, but more for fun
-const int rectWidth = 5;
-const int rectDist = 3;
+const int barCount = 32;//4 Sides, 8 Bars each Side - Should be 32
+const int rectWidth = 7;
+const int rectDist = 5;
 
-const int width = 1200;
-const int height = 800;
-const int give = 9990;
+const int width = 500;
+const int height = 200;
+const int give = 10000;
 sf::Keyboard::Key levels[10]{ sf::Keyboard::A,sf::Keyboard::S,sf::Keyboard::D,sf::Keyboard::F,sf::Keyboard::G,sf::Keyboard::H,sf::Keyboard::J,sf::Keyboard::K,sf::Keyboard::L, sf::Keyboard::SemiColon };
 
 //Create Bar
@@ -66,7 +66,7 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(width, height), "Bar Visualizer");
 
-	window.setFramerateLimit(1000);
+	window.setFramerateLimit(500);
 
 	//Initialize Mic Recording
 	FFT fft("", 16384);
@@ -122,13 +122,13 @@ int main()
 		//Tremor Bars by audio level
 		vector<int> aryBar = fft.getBarValues(barCount);
 		for(int i = 0; i < aryBar.size(); i++)
-		waveBoop(bars, i, aryBar[i]/100);
+		waveBoop(bars, i, aryBar[i]);
 
 
 		//Draw the Bars
 		for (int i = 0; i < barCount; i++)
 		{
-			sf::RectangleShape rs = createRect(i, bars[i].height);
+			sf::RectangleShape rs = createRect(i, bars[i].height/500);
 			rs.setFillColor(bars[i].getColor());
 			window.draw(rs);
 		}
