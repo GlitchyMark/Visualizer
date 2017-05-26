@@ -34,6 +34,8 @@ public:
 
 	float rangeAverage(int start, int end, CArray ary);
 
+	float getFreqValue(float i);
+
 	vector<int> getBarValues(int bars);
 
 	void draw(RenderWindow &window);

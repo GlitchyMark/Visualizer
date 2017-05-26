@@ -27,6 +27,9 @@
     <ClCompile Include="MicRec.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Led.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Font Include="Verdana.ttf">
@@ -40,10 +43,8 @@
     <ClInclude Include="FFT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="..\..\..\..\..\Desktop\acvc.wav">
-      <Filter>Resource Files</Filter>
-    </Media>
+    <ClInclude Include="Led.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

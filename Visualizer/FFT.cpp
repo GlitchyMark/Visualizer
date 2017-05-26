@@ -1,6 +1,6 @@
 #include "FFT.h"
 
-//Credits for most of this to Muzkaw - https://www.youtube.com/watch?v=LqUuMqfW1PE
+//Credits for the origional version of this class to Muzkaw - https://www.youtube.com/watch?v=LqUuMqfW1PE
 
 FFT::FFT(string const& _path, int const& _bufferSize)
 {
@@ -109,28 +109,22 @@ int FFT::rangeMax(int start, int end, CArray ary)
 	if (start > end)
 	{
 		cout << "Start: " << to_string(start) << " End: " << to_string(end);
-		//return 0;
-		//throw invalid_argument("The fuck");
 	}
 	while (end > start)
 	{
 		if (start > ary.size())
 			break;
-		//cout << to_string(inc) << " : ";
-		//cout << to_string(abs(ary[inc])) << endl;
 		if (abs(ary[start]) > max)
 		{
 			max = abs(ary[(int)start]);
-			//cout << to_string(max) << endl;
 		}
 		start++;
 	}
-	//if(max == 0)
-	//cout << to_string(end) << endl;
 	dbgp = to_string(max);
 	return max;
 }
 
+//Broken, I think
 float FFT::rangeAverage(int start, int end, CArray ary)
 {
 	float total = 0;
@@ -138,8 +132,6 @@ float FFT::rangeAverage(int start, int end, CArray ary)
 	if (start > end)
 	{
 		cout << "Start: " << to_string(start) << " End: " << to_string(end);
-		//return 0;
-		//throw invalid_argument("The fuck");
 	}
 	int ticks = 0;
 	while (end > start)
@@ -150,17 +142,16 @@ float FFT::rangeAverage(int start, int end, CArray ary)
 			end = start;
 			break;
 		}
-		//cout << to_string(inc) << " : ";
-		//cout << to_string(abs(ary[inc])) << endl;
 		total = abs(ary[(int)start]);
 		start++;
 	}
-	//if(max == 0)
-	//cout << to_string(end) << endl;
 	dbgp = to_string((total * 2000) / (ticks));
 	return (total*2000)/(ticks);
 }
-
+float FFT::getFreqValue(float i)
+{
+	return ((logf(i) / logf(bufferSize / 2.f)));
+}
 vector<int> FFT::getBarValues(int bars)
 {
 	vector<int> brs;
@@ -177,31 +168,56 @@ vector<int> FFT::getBarValues(int bars)
 	float e = 1;
 
 
-	//Frequency Range
+	//Low and high, Range doesn't correlate to frequency.
 	float low = 3;
-	float high = 10000;
-
-	for (float i(3.235); i < bufferSize / 2.f; i *= 1.01)
+	float high = 200;
+	preI = getFreqValue(low);
+	bool started = false;
+	for (float i(3); i < bufferSize / 2.f; i+=1.01)
 	{
-		Vector2f samplePosition((abs(logf(i) / logf(bufferSize / 2.f) - s*(1))* (1+s+.5)), abs(bin[(int)i]));
+		//Vector2f samplePosition((abs(logf(i) / logf(bufferSize / 2.f) - s*(1))* (1+s+.5)), abs(bin[(int)i]));
 
+		Vector2f samplePosition(logf(i) / logf(bufferSize / 2.f), abs(bin[(int)i]));
 
 		//if (!(low < samplePosition.x < high))
 		//+	continue;
 
-		int cbar = floor((samplePosition.x)*bars);
+		float xVal = (samplePosition.x - getFreqValue(low)) * (2 - getFreqValue(high) / getFreqValue(bufferSize /2));
 
-		//cout << "Low: " << cbar << " : " << i << " : "<< to_string((samplePosition.x)) << endl;
 
+		int cbar = floor((xVal)*bars);
+
+		//cout << "Low: " << cbar << " Frequency: " << i << " xValue: " << to_string((xVal)) << endl;
+
+
+		if (xVal <= 0 && !started)
+		{
+			started = true;
+			preI = i;
+		}
+		//cout << bin.size() << endl;
 		//cout << to_string(floor((samplePosition.x*(1+(s/e))-s)*bars)) << endl;
 
-		if (cb != cbar)
+		if (brs.size() < cbar)
+			continue;
+
+		if (cb != cbar && cbar >= 0)
 		{
-			if (brs.size() < cbar)
-				break;
-			int lmax = rangeMax(preI, i, bin) / 3000 *500;
+			int lmax = rangeMax(preI, i, bin) / 300 *75;
 			if (lmax > 70000) lmax = 70000;
 			brs[cb] = lmax;
+
+			//cout << "Low: " << cbar << " Frequency: " << i << " xValue: " << to_string((xVal)) << " bin: " << to_string(lmax)<< endl;
+
+			if (cb + 1 != cbar&& cbar != 0)
+			{
+				for (int inc = cb + 1; inc < cbar; inc++)
+				{
+					//cout << "no bar Value for: " << cb + 1 << endl;
+					brs[inc] = (brs[cb] + lmax) / 2;
+				}
+				//cout << "We did it!" << endl;
+			}
 			preI = i;
 			cb = cbar;
 		}

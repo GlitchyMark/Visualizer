@@ -1,36 +1,3 @@
-/*#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include "FFT.h"
-
-using namespace std;
-using namespace sf;
-
-int main()
-{
-	RenderWindow window(VideoMode(900, 900, 32), "Window");
-
-	string path;
-	int bufferSize;
-	cout << "Enter the buffer size treated by the fft (powers of two works best like 16384)" << endl;
-	cin >> bufferSize;
-
-	FFT fft("", bufferSize);
-
-	Event event;
-
-	while (window.isOpen())
-	{
-		while (window.pollEvent(event)) {}
-
-		fft.update();
-
-		window.clear();
-		fft.draw(window);
-		window.display();
-	}
-
-	return 0;
-}*/
 
 
 #include <iostream>
@@ -43,12 +10,13 @@ int main()
 
 const int led_size = 100;
 
-const int barCount = 32;//4 Sides, 8 Bars each Side - Should be 32, but more for fun
+const int barCount = 8;//4 Sides, 8 Bars each Side - Should be 32, but more for fun
 const int rectWidth = 5;
 const int rectDist = 3;
 
 const int width = 1200;
 const int height = 800;
+const int give = 9990;
 sf::Keyboard::Key levels[10]{ sf::Keyboard::A,sf::Keyboard::S,sf::Keyboard::D,sf::Keyboard::F,sf::Keyboard::G,sf::Keyboard::H,sf::Keyboard::J,sf::Keyboard::K,sf::Keyboard::L, sf::Keyboard::SemiColon };
 
 //Create Bar
@@ -68,7 +36,7 @@ int newHeight(int num, sf::Vector2f vec)
 	float hgt;
 	float newx = (float)vec.x;
 	int newy = vec.y;
-	hgt = -powf(num - newx, 2) * 300 + newy;
+	hgt = -powf(num - newx, 2) * give + newy;
 	if (hgt < 0) hgt = 0;
 	return hgt;
 }
@@ -98,16 +66,19 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(width, height), "Bar Visualizer");
 
-	window.setFramerateLimit(120);
+	window.setFramerateLimit(1000);
 
+	//Initialize Mic Recording
 	FFT fft("", 16384);
 
 	//Create Bars
 	Bar * bars;
 	bars = new Bar[barCount];
+
 	for (int i = 0; barCount > i; i++)
 	{
 		bars[i] = Bar();
+		bars[i].setID(i);
 	}
 
 	//Setup Font
@@ -123,6 +94,7 @@ int main()
 	while (window.isOpen())
 	{
 		sf::Event event;
+		//Check if window is still open
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
@@ -131,9 +103,9 @@ int main()
 
 		//Update AudioStream Values
 		fft.update();
-		//Debug info
+
+		//Set debug text
 		text.setString(fft.dbgp);
-		//text.setOrigin(100, 100);
 
 		window.clear();
 
@@ -146,8 +118,8 @@ int main()
 			if (sf::Keyboard::isKeyPressed(levels[i]))
 				waveBoop(bars, i * 8, 500);
 		}*/
-		//window.draw(shape);
 
+		//Tremor Bars by audio level
 		vector<int> aryBar = fft.getBarValues(barCount);
 		for(int i = 0; i < aryBar.size(); i++)
 		waveBoop(bars, i, aryBar[i]/100);
@@ -155,9 +127,11 @@ int main()
 
 		//Draw the Bars
 		for (int i = 0; i < barCount; i++)
-			window.draw(createRect(i, bars[i].height));
-		//Draw Debug Text
-		//fft.draw(window);
+		{
+			sf::RectangleShape rs = createRect(i, bars[i].height);
+			rs.setFillColor(bars[i].getColor());
+			window.draw(rs);
+		}
 
 		window.draw(text);
 		window.display();

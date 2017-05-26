@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClCompile Include="Bar.cpp" />
     <ClCompile Include="FFT.cpp" />
+    <ClCompile Include="Led.cpp" />
     <ClCompile Include="MicRec.cpp" />
     <ClCompile Include="Visualizer.cpp" />
   </ItemGroup>
@@ -162,9 +163,7 @@
   <ItemGroup>
     <ClInclude Include="Bar.h" />
     <ClInclude Include="FFT.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="..\..\..\..\..\Desktop\acvc.wav" />
+    <ClInclude Include="Led.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
