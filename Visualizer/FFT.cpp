@@ -3,21 +3,27 @@
 //Credits for the origional version of this class to Muzkaw - https://www.youtube.com/watch?v=LqUuMqfW1PE
 ///TODO: Optimize the fuck out of everything
 
-int sensivity = 50;
-
+int sensivity = 10000 * 0.85;
+//int sensivity = 10;
 FFT::FFT(string const& _path, int const& _bufferSize)
 {
 	if (!SoundRecorder::isAvailable()) cout << "Unable to detect sound device" << endl;
-	recorder.setChannelCount(1);
+	recorder.setChannelCount(2);
 	recorder.setInfo(tempbuffer, Test);
 	recorder.start();
+	cout << "Devices: ";
+	for (int i = 0; i < recorder.getAvailableDevices().size(); i++)
+	{
+		cout << recorder.getAvailableDevices()[i] << " ";
+	}
+	cout << endl;
 	while (Test != "worked!") { cout << Test << endl; };
 	buffer = tempbuffer;
 
 	sampleRate = recorder.getSampleRate()*recorder.getChannelCount();
 	sampleCount = buffer.getSampleCount();
-	if (_bufferSize < sampleCount) bufferSize = _bufferSize;
-	else bufferSize = sampleCount;
+	//if (_bufferSize < sampleCount) bufferSize = _bufferSize;
+	bufferSize = sampleCount;
 
 	for (int i(0); i < bufferSize; i++) window.push_back(0.54 - 0.46*cos(2 * PI*i / (float)bufferSize));
 
@@ -123,30 +129,6 @@ int FFT::rangeMax(int start, int end, CArray ary)
 	return max;
 }
 
-//Broken, I think
-float FFT::rangeAverage(int start, int end, CArray ary)
-{
-	float total = 0;
-	//float div = end - start;
-	if (start > end)
-	{
-		cout << "Start: " << to_string(start) << " End: " << to_string(end);
-	}
-	int ticks = 0;
-	while (end > start)
-	{
-		ticks++;
-		if (start > ary.size())
-		{
-			end = start;
-			break;
-		}
-		total = abs(ary[(int)start]);
-		start++;
-	}
-	dbgp = to_string((total * 2000) / (ticks));
-	return (total*2000)/(ticks);
-}
 //This lies, it isn't the frequency value, but the converted value to our ears on a logrithmic scale
 float FFT::getFreqValue(float i)
 {
@@ -171,7 +153,7 @@ vector<int> FFT::getBarValues(int bars)
 
 	//Low and high, Range doesn't correlate to frequency.
 	float low = 3;
-	float high =3;//(2 - (min(bufferSize / 2.f, 20000.f) / (high));
+	float high =4;//(2 - (min(bufferSize / 2.f, 20000.f) / (high));
 	preI = getFreqValue(low);
 	bool started = false;
 	for (float i(3); i < min(bufferSize / 2.f, 20000.f); i+=1.01)
@@ -198,8 +180,9 @@ vector<int> FFT::getBarValues(int bars)
 
 		if (cb != cbar && cbar >= 0)
 		{
-			int lmax = rangeMax(preI, i, bin) / 500 *sensivity;
-			if (lmax > 100000) lmax = 100000;
+			int lmax = logf((int)rangeMax(preI, i, bin)/ 100000) * 150;
+			//int lmax = rangeMax(preI, i, bin) / 500 * 25;
+			if (lmax > 1000) lmax = 1000;
 			brs[cb] = lmax;
 
 			//cout << "Low: " << cbar << " Frequency: " << i << " xValue: " << to_string((xVal)) << " bin: " << to_string(lmax)<< endl;

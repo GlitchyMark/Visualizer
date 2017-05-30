@@ -10,18 +10,19 @@
 
 const int led_size = 100;
 
-const int barCount = 32;//4 Sides, 8 Bars each Side - Should be 32
-const int rectWidth = 7;
-const int rectDist = 5;
+const int barCount = 8;//4 Sides, 8 Bars each Side - Should be 32
+const int rectWidth = 5;
+const int rectDist = 3;
 
-const int width = 500;
-const int height = 200;
-const int give = 10000;
+const int width = 1000;
+const int height = 600;
+const int give = 100;
 sf::Keyboard::Key levels[10]{ sf::Keyboard::A,sf::Keyboard::S,sf::Keyboard::D,sf::Keyboard::F,sf::Keyboard::G,sf::Keyboard::H,sf::Keyboard::J,sf::Keyboard::K,sf::Keyboard::L, sf::Keyboard::SemiColon };
 
 //Create Bar
 sf::RectangleShape createRect(int number, float r_height)
 {
+	r_height = r_height / 2;
 	sf::RectangleShape rectangle(sf::Vector2f(rectWidth, r_height));
 	rectangle.setPosition((rectWidth + rectDist) * number, height - r_height);
 	rectangle.setFillColor(sf::Color::Green);
@@ -66,7 +67,7 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(width, height), "Bar Visualizer");
 
-	window.setFramerateLimit(500);
+	window.setFramerateLimit(100);
 
 	//Initialize Mic Recording
 	FFT fft("", 16384);
@@ -128,9 +129,10 @@ int main()
 		//Draw the Bars
 		for (int i = 0; i < barCount; i++)
 		{
-			sf::RectangleShape rs = createRect(i, bars[i].height/500);
+			sf::RectangleShape rs = createRect(i, bars[i].height);
 			rs.setFillColor(bars[i].getColor());
 			window.draw(rs);
+			bars[i].drawLeds(window);
 		}
 
 		window.draw(text);
