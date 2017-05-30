@@ -12,6 +12,8 @@ public:
 	Bar();
 	~Bar();
 	vector<Led> getLeds();
+	void printLedsByte();
+	void printLeds();
 	void drawLeds(sf::RenderWindow & window);
 	void tick();
 	void setID(int ID);

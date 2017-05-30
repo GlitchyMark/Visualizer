@@ -180,7 +180,7 @@ vector<int> FFT::getBarValues(int bars)
 
 		if (cb != cbar && cbar >= 0)
 		{
-			int lmax = logf((int)rangeMax(preI, i, bin)/ 100000) * 150;
+			int lmax = logf((int)rangeMax(preI, i, bin)/ 5000) * 125;
 			//int lmax = rangeMax(preI, i, bin) / 500 * 25;
 			if (lmax > 1000) lmax = 1000;
 			brs[cb] = lmax;

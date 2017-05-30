@@ -4,6 +4,9 @@
 
 Led::Led()
 {
+	red = 0;
+	green = 0;
+	blue = 0;
 }
 
 void Led::setID(int ID)

@@ -11,11 +11,16 @@ Bar::~Bar()
 }
 vector<Led> Bar::getLeds()
 {
-	vector<Led> led(8);
+	vector<Led> led;
 	bool done = false;
+
+	for (int i = 0; i < 8; i++)
+	{
+		led.push_back(Led());
+		led[i].setID(i);
+	}
 	for (int i = 0; i < 8 && !done ; i++)
 	{
-		led[i].setID(id + i*8);
 		//led[i].red = (int)(((float)height) / mH * 255)*i / 8;
 		float grn = height / mH;
 		grn = grn*255*(8-i);
@@ -43,6 +48,29 @@ vector<Led> Bar::getLeds()
 	}
 	return led;
 
+}
+/**
+*Each led is 8+32 bytes
+*Each row is 40*8 bytes
+*/
+void Bar::printLedsByte()
+{
+	cout << "Row: " << id << endl;
+	vector<Led> leds = getLeds();
+	for (int i = 0; leds.size() > i; i++)
+	{
+		(leds[i].id << leds[i].getColor().toInteger());
+	}
+}
+void Bar::printLeds()
+{
+
+	cout << "Row: " << id << endl;
+	vector<Led> leds = getLeds();
+	for (int i = 0; leds.size() > i; i++)
+	{
+		cout << "Led: "<< to_string(leds[i].id) << " RGB:" << to_string(leds[i].getColor().toInteger()) << endl;
+	}
 }
 
 void Bar::drawLeds(sf::RenderWindow &window)

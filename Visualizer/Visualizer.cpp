@@ -125,7 +125,7 @@ int main()
 		for(int i = 0; i < aryBar.size(); i++)
 		waveBoop(bars, i, aryBar[i]);
 
-
+		cout << "Leds serial print" << endl;
 		//Draw the Bars
 		for (int i = 0; i < barCount; i++)
 		{
@@ -133,7 +133,9 @@ int main()
 			rs.setFillColor(bars[i].getColor());
 			window.draw(rs);
 			bars[i].drawLeds(window);
+			bars[i].printLedsByte();
 		}
+		cout << endl;
 
 		window.draw(text);
 		window.display();
