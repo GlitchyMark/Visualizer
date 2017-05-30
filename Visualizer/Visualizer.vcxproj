@@ -155,6 +155,7 @@
     <ClCompile Include="FFT.cpp" />
     <ClCompile Include="Led.cpp" />
     <ClCompile Include="MicRec.cpp" />
+    <ClCompile Include="Serial.cpp" />
     <ClCompile Include="Visualizer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +165,7 @@
     <ClInclude Include="Bar.h" />
     <ClInclude Include="FFT.h" />
     <ClInclude Include="Led.h" />
+    <ClInclude Include="Serial.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
