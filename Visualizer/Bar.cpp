@@ -1,7 +1,6 @@
 #include "Bar.h"
 
 
-float mH = 1000;
 
 Bar::Bar()
 {
@@ -22,7 +21,7 @@ vector<Led> Bar::getLeds()
 	for (int i = 0; i < 8 && !done ; i++)
 	{
 		//led[i].red = (int)(((float)height) / mH * 255)*i / 8;
-		float grn = height / mH;
+		float grn = height / (float)maxHeight;
 		grn = grn*255*(8-i);
 		if (grn > 255)
 			grn = 255;
@@ -89,7 +88,7 @@ void Bar::drawLeds(sf::RenderWindow &window)
 
 void Bar::tick()
 {
-	height-=20;
+	height-=100;
 	if (height < 10)
 		height = 10;
 }
@@ -101,7 +100,7 @@ void Bar::addHeight(int h)
 
 sf::Color Bar::getColor()
 {
-	sf::Color color(((float)height)/mH*255, 255- (((float)height) /mH*255), 0);
+	sf::Color color(((float)height)/ (float)maxHeight *255, 255- (((float)height) /(float)maxHeight *255), 0);
 	return color;
 }
 

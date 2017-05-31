@@ -9,6 +9,7 @@ using namespace std;
 class Bar
 {
 public:
+	int maxHeight = 750;
 	Bar();
 	~Bar();
 	vector<Led> getLeds();

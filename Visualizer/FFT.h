@@ -19,7 +19,11 @@ typedef valarray<Complex> CArray;
 class FFT
 {
 public:
+	int maxHeight = 750;
+
 	FFT(string const& _path, int const& _bufferSize);
+
+	void Close();
 
 	void hammingWindow();
 	void fft(CArray &x);

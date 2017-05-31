@@ -29,6 +29,12 @@ FFT::FFT(string const& _path, int const& _bufferSize)
 
 	//sample.resize(bufferSize);
 }
+
+void FFT::Close()
+{
+	recorder.stop();
+}
+
 //Does.. Something
 void FFT::hammingWindow()
 {
@@ -151,9 +157,9 @@ vector<int> FFT::getBarValues(int bars)
 	float e = 1;
 
 
-	//Low and high, Range doesn't correlate to frequency.
-	float low = 3;
-	float high =4;//(2 - (min(bufferSize / 2.f, 20000.f) / (high));
+	//Low and high, Range doesn't correlate to frequency. - Both used differently.
+	float low = 4;
+	float high =3.2;//(2 - (min(bufferSize / 2.f, 20000.f) / (high));
 	preI = getFreqValue(low);
 	bool started = false;
 	for (float i(3); i < min(bufferSize / 2.f, 20000.f); i+=1.01)
@@ -180,9 +186,10 @@ vector<int> FFT::getBarValues(int bars)
 
 		if (cb != cbar && cbar >= 0)
 		{
-			int lmax = logf((int)rangeMax(preI, i, bin)/ 5000) * 125;
+			//TODO: setup vars for divisor and sensivity.
+			int lmax = logf((int)rangeMax(preI, i, bin)/ 100000) * 125;
 			//int lmax = rangeMax(preI, i, bin) / 500 * 25;
-			if (lmax > 1000) lmax = 1000;
+			if (lmax > maxHeight) lmax = maxHeight;
 			brs[cb] = lmax;
 
 			//cout << "Low: " << cbar << " Frequency: " << i << " xValue: " << to_string((xVal)) << " bin: " << to_string(lmax)<< endl;

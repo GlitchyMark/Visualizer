@@ -10,10 +10,9 @@
 
 const int led_size = 100;
 
-const int barCount = 8;//4 Sides, 8 Bars each Side - Should be 32
+const int barCount = 64;//4 Sides, 8 Bars each Side - Should be 32
 const int rectWidth = 5;
 const int rectDist = 3;
-
 const int width = 1000;
 const int height = 600;
 const int give = 100;
@@ -67,7 +66,7 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(width, height), "Bar Visualizer");
 
-	window.setFramerateLimit(100);
+	window.setFramerateLimit(30);
 
 	//Initialize Mic Recording
 	FFT fft("", 16384);
@@ -99,7 +98,10 @@ int main()
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+				fft.Close();
+			}
 		}
 
 		//Update AudioStream Values
@@ -125,7 +127,7 @@ int main()
 		for(int i = 0; i < aryBar.size(); i++)
 		waveBoop(bars, i, aryBar[i]);
 
-		cout << "Leds serial print" << endl;
+		//cout << "Leds serial print" << endl;
 		//Draw the Bars
 		for (int i = 0; i < barCount; i++)
 		{
@@ -133,9 +135,9 @@ int main()
 			rs.setFillColor(bars[i].getColor());
 			window.draw(rs);
 			bars[i].drawLeds(window);
-			bars[i].printLedsByte();
+			//bars[i].printLedsByte();
 		}
-		cout << endl;
+		//cout << endl;
 
 		window.draw(text);
 		window.display();
