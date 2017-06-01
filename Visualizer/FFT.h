@@ -19,7 +19,7 @@ typedef valarray<Complex> CArray;
 class FFT
 {
 public:
-	int maxHeight = 750;
+	int maxHeight = 700;
 
 	FFT(string const& _path, int const& _bufferSize);
 
@@ -57,14 +57,8 @@ private:
 	vector<float> window;
 	CArray bin;
 
-	VertexArray VA1;
-	VertexArray VA2;
-	VertexArray VA3;
-	vector<Vertex> cascade;
-
 	int sampleRate;
 	int sampleCount;
 	int bufferSize;
-	int mark;
 };
 

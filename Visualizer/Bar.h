@@ -3,13 +3,14 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+
 using namespace sf;
 using namespace std;
 
 class Bar
 {
 public:
-	int maxHeight = 750;
+	int maxHeight = 700;
 	Bar();
 	~Bar();
 	vector<Led> getLeds();

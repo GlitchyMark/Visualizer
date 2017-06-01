@@ -29,9 +29,7 @@ vector<Led> Bar::getLeds()
 			done = true;
 
 		//255*8/i wasn't working for some reason...
-		float rd = 255;
-		rd /= (8);
-		rd *= i;
+		float rd = 255*i/8;
 		//std::cout << i << ": " << to_string(rd) << std::endl;
 		if (done)
 		{

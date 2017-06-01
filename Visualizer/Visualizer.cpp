@@ -8,15 +8,17 @@
 #include "Bar.h"
 #include "FFT.h"
 
-const int led_size = 100;
-
-const int barCount = 64;//4 Sides, 8 Bars each Side - Should be 32
+//Variables
+const int barCount = 32;//4 Sides, 8 Bars each Side - Should be 32
+const int maxHeight = 1000;
+const int give = 100;
+int lowRange = 3 + .8;
+int highRange = 3 + .75;
+//Visual variables
 const int rectWidth = 5;
 const int rectDist = 3;
 const int width = 1000;
 const int height = 600;
-const int give = 100;
-sf::Keyboard::Key levels[10]{ sf::Keyboard::A,sf::Keyboard::S,sf::Keyboard::D,sf::Keyboard::F,sf::Keyboard::G,sf::Keyboard::H,sf::Keyboard::J,sf::Keyboard::K,sf::Keyboard::L, sf::Keyboard::SemiColon };
 
 //Create Bar
 sf::RectangleShape createRect(int number, float r_height)
@@ -27,8 +29,6 @@ sf::RectangleShape createRect(int number, float r_height)
 	rectangle.setFillColor(sf::Color::Green);
 	return rectangle;
 }
-
-
 
 //Create hight of the bar
 int newHeight(int num, sf::Vector2f vec)
@@ -41,27 +41,13 @@ int newHeight(int num, sf::Vector2f vec)
 	return hgt;
 }
 
-int newHeightMouse(int num, sf::Vector2i vec)
-{
-	float hgt;
-	float newx = (float)vec.x / (rectWidth + rectDist) - 1;
-	int newy = -vec.y + height;
-	hgt = newHeight(num, sf::Vector2f(newx, newy));
-
-	return hgt;
-}
 //Add a wave tremor
 void waveBoop(Bar* bars, float x, float y)
 {
 	for (int i = 0; barCount > i; i++)
 		bars[i].addHeight(newHeight(i, sf::Vector2f(x, y)));
 }
-//Add a wave tremor for mouse
-void waveBoopMouse(Bar* bars, int x, int y)
-{
-	for (int i = 0; barCount > i; i++)
-		bars[i].addHeight(newHeightMouse(i, sf::Vector2i(x, y)));
-}
+
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(width, height), "Bar Visualizer");
@@ -89,7 +75,6 @@ int main()
 	text.setCharacterSize(24);
 	text.setFillColor(sf::Color::Red);
 	text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-	int ticks = 0;
 
 	while (window.isOpen())
 	{
@@ -111,16 +96,9 @@ int main()
 		text.setString(fft.dbgp);
 
 		window.clear();
-
+		
 		for (int i = 0; i < barCount; i++)
 			bars[i].tick();
-		//Tremor at mouse location
-		/*waveBoopMouse(bars, sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
-		for (int i = 0; sizeof(levels) / sizeof(sf::Keyboard::Key) > i; i++)
-		{
-			if (sf::Keyboard::isKeyPressed(levels[i]))
-				waveBoop(bars, i * 8, 500);
-		}*/
 
 		//Tremor Bars by audio level
 		vector<int> aryBar = fft.getBarValues(barCount);
@@ -138,7 +116,7 @@ int main()
 			//bars[i].printLedsByte();
 		}
 		//cout << endl;
-
+		
 		window.draw(text);
 		window.display();
 	}

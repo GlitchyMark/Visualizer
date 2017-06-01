@@ -1,7 +1,7 @@
 #include "FFT.h"
 
 //Credits for the origional version of this class to Muzkaw - https://www.youtube.com/watch?v=LqUuMqfW1PE
-///TODO: Optimize the fuck out of everything
+//TODO: Optimize the fuck out of everything
 
 int sensivity = 10000 * 0.85;
 //int sensivity = 10;
@@ -97,22 +97,6 @@ void FFT::update()
 
 	float max = 100000;
 }
-
-
-
-/*int FFT::rangeMax(int start, int end, CArray ary)
-{
-	float max = 0;
-	//float div = end - start;
-	while (end > start)
-	{
-		if (abs(ary[start]) > max)
-			max = abs(ary[start]);
-		start++;
-	}
-	return max;
-}*/
-
 int FFT::rangeMax(int start, int end, CArray ary)
 {
 	float max = 0;
@@ -138,28 +122,21 @@ int FFT::rangeMax(int start, int end, CArray ary)
 //This lies, it isn't the frequency value, but the converted value to our ears on a logrithmic scale
 float FFT::getFreqValue(float i)
 {
-	return ((log(i) / log(min(bufferSize / 2.f, 20000.f)))) * .5f; //*.9f is dumb, but works
+	return ((log(i) / log(min(bufferSize / 2.f, 20000.f)))) * .5f; //*.5f is dumb, but works - Don't remember why I did this...
 }
 
 vector<int> FFT::getBarValues(int bars)
 {
 	vector<int> brs;
 	brs.resize(bars);
-	//int divisor = floor(bin.size() / bars);
-
+	//Curent bar being worked on
 	int cb = 0;
+	//End I value of pervious bar
 	int preI = 3;
-	//cout << to_string(preI) << endl;
-
-	//starting value of grid
-	//float s = (logf(3.235) / logf(min(bufferSize / 2.f, 20000.f)));
-	//
-	float e = 1;
-
 
 	//Low and high, Range doesn't correlate to frequency. - Both used differently.
-	float low = 4;
-	float high =3.2;//(2 - (min(bufferSize / 2.f, 20000.f) / (high));
+	float low = 3.8;
+	float high =3.75;//(2 - (min(bufferSize / 2.f, 20000.f) / (high));
 	preI = getFreqValue(low);
 	bool started = false;
 	for (float i(3); i < min(bufferSize / 2.f, 20000.f); i+=1.01)
@@ -187,8 +164,7 @@ vector<int> FFT::getBarValues(int bars)
 		if (cb != cbar && cbar >= 0)
 		{
 			//TODO: setup vars for divisor and sensivity.
-			int lmax = logf((int)rangeMax(preI, i, bin)/ 100000) * 125;
-			//int lmax = rangeMax(preI, i, bin) / 500 * 25;
+			int lmax = ((float)rangeMax(preI, i, bin)/ 10000000) * 500;
 			if (lmax > maxHeight) lmax = maxHeight;
 			brs[cb] = lmax;
 
@@ -204,7 +180,6 @@ vector<int> FFT::getBarValues(int bars)
 			preI = i;
 			cb = cbar;
 		}
-		//brs[bars-1] = 100000;
 	}
 	return brs;
 }
