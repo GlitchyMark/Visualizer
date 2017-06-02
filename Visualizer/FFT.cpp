@@ -97,7 +97,7 @@ void FFT::update()
 
 	float max = 100000;
 }
-int FFT::rangeMax(int start, int end, CArray ary)
+float FFT::rangeMax(int start, int end, CArray ary)
 {
 	float max = 0;
 	//float div = end - start;
@@ -135,8 +135,8 @@ vector<int> FFT::getBarValues(int bars)
 	int preI = 3;
 
 	//Low and high, Range doesn't correlate to frequency. - Both used differently.
-	float low = 3.8;
-	float high =3.75;//(2 - (min(bufferSize / 2.f, 20000.f) / (high));
+	float low = vars.lowRange;
+	float high = vars.highRange;//(2 - (min(bufferSize / 2.f, 20000.f) / (high));
 	preI = getFreqValue(low);
 	bool started = false;
 	for (float i(3); i < min(bufferSize / 2.f, 20000.f); i+=1.01)
@@ -164,8 +164,8 @@ vector<int> FFT::getBarValues(int bars)
 		if (cb != cbar && cbar >= 0)
 		{
 			//TODO: setup vars for divisor and sensivity.
-			int lmax = ((float)rangeMax(preI, i, bin)/ 10000000) * 500;
-			if (lmax > maxHeight) lmax = maxHeight;
+			int lmax = ((float)rangeMax(preI, i, bin)/ vars.divisor) * vars.sensivity;
+			if (lmax > vars.maxHeight) lmax = vars.maxHeight;
 			brs[cb] = lmax;
 
 			//cout << "Low: " << cbar << " Frequency: " << i << " xValue: " << to_string((xVal)) << " bin: " << to_string(lmax)<< endl;

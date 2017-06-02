@@ -2,7 +2,7 @@
 #include "Led.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
-
+#include "global.h"
 
 using namespace sf;
 using namespace std;

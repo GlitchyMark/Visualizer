@@ -7,13 +7,10 @@
 #include <SFML/Audio.hpp>
 #include "Bar.h"
 #include "FFT.h"
+#include "global.h"
 
 //Variables
-const int barCount = 32;//4 Sides, 8 Bars each Side - Should be 32
-const int maxHeight = 1000;
-const int give = 100;
-int lowRange = 3 + .8;
-int highRange = 3 + .75;
+Variables vars;
 //Visual variables
 const int rectWidth = 5;
 const int rectDist = 3;
@@ -31,12 +28,12 @@ sf::RectangleShape createRect(int number, float r_height)
 }
 
 //Create hight of the bar
-int newHeight(int num, sf::Vector2f vec)
+float newHeight(int num, sf::Vector2f vec)
 {
 	float hgt;
 	float newx = (float)vec.x;
 	int newy = vec.y;
-	hgt = -powf(num - newx, 2) * give + newy;
+	hgt = -powf(num - newx, 2) * vars.give + newy;
 	if (hgt < 0) hgt = 0;
 	return hgt;
 }
@@ -44,7 +41,7 @@ int newHeight(int num, sf::Vector2f vec)
 //Add a wave tremor
 void waveBoop(Bar* bars, float x, float y)
 {
-	for (int i = 0; barCount > i; i++)
+	for (int i = 0; vars.barCount > i; i++)
 		bars[i].addHeight(newHeight(i, sf::Vector2f(x, y)));
 }
 
@@ -52,16 +49,16 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(width, height), "Bar Visualizer");
 
-	window.setFramerateLimit(30);
+	window.setFramerateLimit(60);
 
 	//Initialize Mic Recording
 	FFT fft("", 16384);
 
 	//Create Bars
 	Bar * bars;
-	bars = new Bar[barCount];
+	bars = new Bar[vars.barCount];
 
-	for (int i = 0; barCount > i; i++)
+	for (int i = 0; vars.barCount > i; i++)
 	{
 		bars[i] = Bar();
 		bars[i].setID(i);
@@ -97,17 +94,17 @@ int main()
 
 		window.clear();
 		
-		for (int i = 0; i < barCount; i++)
+		for (int i = 0; i < vars.barCount; i++)
 			bars[i].tick();
 
 		//Tremor Bars by audio level
-		vector<int> aryBar = fft.getBarValues(barCount);
+		vector<int> aryBar = fft.getBarValues(vars.barCount);
 		for(int i = 0; i < aryBar.size(); i++)
 		waveBoop(bars, i, aryBar[i]);
 
 		//cout << "Leds serial print" << endl;
 		//Draw the Bars
-		for (int i = 0; i < barCount; i++)
+		for (int i = 0; i < vars.barCount; i++)
 		{
 			sf::RectangleShape rs = createRect(i, bars[i].height);
 			rs.setFillColor(bars[i].getColor());

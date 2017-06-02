@@ -21,7 +21,7 @@ vector<Led> Bar::getLeds()
 	for (int i = 0; i < 8 && !done ; i++)
 	{
 		//led[i].red = (int)(((float)height) / mH * 255)*i / 8;
-		float grn = height / (float)maxHeight;
+		float grn = height / vars.maxHeight;
 		grn = grn*255*(8-i);
 		if (grn > 255)
 			grn = 255;

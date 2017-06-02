@@ -164,6 +164,7 @@
   <ItemGroup>
     <ClInclude Include="Bar.h" />
     <ClInclude Include="FFT.h" />
+    <ClInclude Include="global.h" />
     <ClInclude Include="Led.h" />
     <ClInclude Include="Serial.h" />
   </ItemGroup>

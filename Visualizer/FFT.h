@@ -7,6 +7,7 @@
 #include <valarray>
 #include <cmath>
 #include "MicRec.cpp"
+#include "global.h"
 const double PI = 3.141592653589793238460;
 
 using namespace std;
@@ -19,7 +20,6 @@ typedef valarray<Complex> CArray;
 class FFT
 {
 public:
-	int maxHeight = 700;
 
 	FFT(string const& _path, int const& _bufferSize);
 
@@ -34,7 +34,7 @@ public:
 	void bars(float const& max);
 	void lines(float const& max);
 
-	int rangeMax(int start, int end, CArray ary);
+	float rangeMax(int start, int end, CArray ary);
 
 	float rangeAverage(int start, int end, CArray ary);
 
