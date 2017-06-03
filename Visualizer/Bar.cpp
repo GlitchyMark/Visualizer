@@ -10,26 +10,27 @@ Bar::~Bar()
 }
 vector<Led> Bar::getLeds()
 {
+	int ledHeight = 6;
 	vector<Led> led;
 	bool done = false;
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < ledHeight; i++)
 	{
 		led.push_back(Led());
 		led[i].setID(i);
 	}
-	for (int i = 0; i < 8 && !done ; i++)
+	for (int i = 0; i < ledHeight && !done ; i++)
 	{
 		//led[i].red = (int)(((float)height) / mH * 255)*i / 8;
 		float grn = height / vars.maxHeight;
-		grn = grn*255*(8-i);
+		grn = grn*255*(ledHeight -i);
 		if (grn > 255)
 			grn = 255;
 		else
 			done = true;
 
 		//255*8/i wasn't working for some reason...
-		float rd = 255*i/8;
+		float rd = 255*i/ ledHeight;
 		//std::cout << i << ": " << to_string(rd) << std::endl;
 		if (done)
 		{
@@ -38,11 +39,19 @@ vector<Led> Bar::getLeds()
 		grn = grn - rd;
 		led[i].green = grn;
 		led[i].red = rd;
-		if (grn < 255)
+		/*if (grn < 255)
 			led[i].blue = grn;
 		else
-			led[i].blue = 255;
+			led[i].blue = 255;*/
+		led[i].blue = 0;
+
+		//Set led brightness
+
+		led[i].green *= vars.brightness;
+		led[i].red *= vars.brightness;
+		led[i].blue *= vars.brightness;
 	}
+
 	return led;
 
 }
@@ -50,14 +59,23 @@ vector<Led> Bar::getLeds()
 *Each led is 8+32 bytes
 *Each row is 40*8 bytes
 */
-void Bar::printLedsByte()
+vector<byte> Bar::getLedsByte()
 {
-	cout << "Row: " << id << endl;
+	vector<byte> bytes = vector<byte>();
 	vector<Led> leds = getLeds();
 	for (int i = 0; leds.size() > i; i++)
 	{
-		(leds[i].id << leds[i].getColor().toInteger());
+		bytes.push_back(leds[i].id);
+		bytes.push_back(leds[i].red);
+		bytes.push_back(leds[i].green);
+		bytes.push_back(leds[i].blue);
 	}
+
+	/*byte *data = bytes.data();
+	char buffer[16] = 0;
+	for (int j = 0; j < 8; j++)
+		sprintf(&buffer[2 * j], "%02X", data[j]);*/
+	return bytes;
 }
 void Bar::printLeds()
 {
@@ -68,6 +86,21 @@ void Bar::printLeds()
 	{
 		cout << "Led: "<< to_string(leds[i].id) << " RGB:" << to_string(leds[i].getColor().toInteger()) << endl;
 	}
+}
+
+void Bar::writeLeds(Communicator com)
+{
+	vector<byte> bytes = vector<byte>();
+	vector<Led> leds = getLeds();
+	for (int i = 0; leds.size() > i; i++)
+	{
+		bytes.push_back(leds[i].id);
+		bytes.push_back(leds[i].red);
+		bytes.push_back(leds[i].green);
+		bytes.push_back(leds[i].blue);
+	}
+	byte *byts = bytes.data();
+	com.writeBytes(byts);
 }
 
 void Bar::drawLeds(sf::RenderWindow &window)
@@ -87,8 +120,8 @@ void Bar::drawLeds(sf::RenderWindow &window)
 void Bar::tick()
 {
 	height-=100;
-	if (height < 10)
-		height = 10;
+	if (height < minHeight)
+		height = minHeight;
 }
 void Bar::addHeight(int h)
 {

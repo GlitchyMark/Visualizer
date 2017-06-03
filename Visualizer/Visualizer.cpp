@@ -8,9 +8,14 @@
 #include "Bar.h"
 #include "FFT.h"
 #include "global.h"
+#include "Serial.h"
+#include "Communicator.h"
+#include <chrono>
+#include <thread>
 
 //Variables
 Variables vars;
+Communicator com;
 //Visual variables
 const int rectWidth = 5;
 const int rectDist = 3;
@@ -47,12 +52,43 @@ void waveBoop(Bar* bars, float x, float y)
 
 int main()
 {
+	/*Serial* SP = new Serial(L"COM6");    // adjust as needed
+
+	if (SP->IsConnected())
+		printf("We're connected");
+
+	int tick = 0;
+	while (SP->IsConnected())
+	{
+		byte bytes[4] = { 4,255,0,0 };
+
+		int byteSize = sizeof(bytes) / sizeof(byte);
+		if (!SP->WriteData(bytes, byteSize))
+		{
+			cout << "Didn't write!" << endl;
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+		tick += 50;
+		if (tick > 255)
+			tick = 0;
+
+	}
+
+	printf("Done?");
+	return 0;*/
+
+
 	sf::RenderWindow window(sf::VideoMode(width, height), "Bar Visualizer");
 
-	window.setFramerateLimit(60);
+	window.setFramerateLimit(30);
 
 	//Initialize Mic Recording
 	FFT fft("", 16384);
+
+	//Connect to COM port
+	com = Communicator(L"COM6");
 
 	//Create Bars
 	Bar * bars;
@@ -72,7 +108,7 @@ int main()
 	text.setCharacterSize(24);
 	text.setFillColor(sf::Color::Red);
 	text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-
+	
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -99,6 +135,7 @@ int main()
 
 		//Tremor Bars by audio level
 		vector<int> aryBar = fft.getBarValues(vars.barCount);
+		vector<byte> bytes = vector<byte>();
 		for(int i = 0; i < aryBar.size(); i++)
 		waveBoop(bars, i, aryBar[i]);
 
@@ -110,8 +147,12 @@ int main()
 			rs.setFillColor(bars[i].getColor());
 			window.draw(rs);
 			bars[i].drawLeds(window);
+			vector<byte> tempBytes = bars[i].getLedsByte();
+			bytes.insert(bytes.end(), tempBytes.begin(), tempBytes.end());
 			//bars[i].printLedsByte();
 		}
+
+		com.writeBytes(bytes.data());
 		//cout << endl;
 		
 		window.draw(text);

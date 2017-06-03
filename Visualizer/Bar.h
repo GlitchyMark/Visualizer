@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "global.h"
+#include "Communicator.h"
 
 using namespace sf;
 using namespace std;
@@ -14,13 +15,15 @@ public:
 	Bar();
 	~Bar();
 	vector<Led> getLeds();
-	void printLedsByte();
+	vector<byte> getLedsByte();
 	void printLeds();
+	void writeLeds(Communicator com);
 	void drawLeds(sf::RenderWindow & window);
 	void tick();
 	void setID(int ID);
 	void addHeight(int h);
-	int height = 10;
+	int minHeight = 0;
+	int height = minHeight;
 	int id;
 	sf::Color getColor();
 };

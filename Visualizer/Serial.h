@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 
 //Taken from: 
 
@@ -23,7 +24,7 @@ private:
 
 public:
 	//Initialize Serial communication with the given COM port
-	Serial(const char *portName);
+	Serial(LPCWSTR portName);
 	//Close the connection
 	~Serial();
 	//Read data in a buffer, if nbChar is greater than the
@@ -33,7 +34,7 @@ public:
 	int ReadData(char *buffer, unsigned int nbChar);
 	//Writes data from a buffer through the Serial connection
 	//return true on success.
-	bool WriteData(const char *buffer, unsigned int nbChar);
+	bool WriteData(const byte *buffer, unsigned int nbChar);
 	//Check if we are actually connected
 	bool IsConnected();
 

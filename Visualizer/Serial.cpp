@@ -1,12 +1,11 @@
 #include "Serial.h"
-
-Serial::Serial(const char *portName)
+Serial::Serial(LPCWSTR portName)
 {
 	//We're not yet connected
 	this->connected = false;
 
 	//Try to connect to the given port throuh CreateFile
-	this->hSerial = CreateFile((LPCWSTR)portName,
+	this->hSerial = CreateFile(portName,
 		GENERIC_READ | GENERIC_WRITE,
 		0,
 		NULL,
@@ -21,7 +20,9 @@ Serial::Serial(const char *portName)
 		if (GetLastError() == ERROR_FILE_NOT_FOUND) {
 
 			//Print Error if neccessary
-			printf("ERROR: Handle was not attached. Reason: %s not available.\n", portName);
+			std::cout << "ERROR: Handle was not attached. Reason: %s not available.\n";
+			std::wcout << portName;
+			std::cout << std::endl;
 
 		}
 		else
@@ -121,7 +122,7 @@ int Serial::ReadData(char *buffer, unsigned int nbChar)
 }
 
 
-bool Serial::WriteData(const char *buffer, unsigned int nbChar)
+bool Serial::WriteData(const byte *buffer, unsigned int nbChar)
 {
 	DWORD bytesSend;
 
