@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "global.h"
-#include "Communicator.h"
+#include <vector>
 
 using namespace sf;
 using namespace std;
@@ -15,9 +15,8 @@ public:
 	Bar();
 	~Bar();
 	vector<Led> getLeds();
-	vector<byte> getLedsByte();
+	vector<char> getLedsByte();
 	void printLeds();
-	void writeLeds(Communicator com);
 	void drawLeds(sf::RenderWindow & window);
 	void tick();
 	void setID(int ID);

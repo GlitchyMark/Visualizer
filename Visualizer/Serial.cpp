@@ -44,10 +44,10 @@ Serial::Serial(LPCWSTR portName)
 		else
 		{
 			//Define serial connection parameters for the arduino board
-			dcbSerialParams.BaudRate = CBR_9600;
+			dcbSerialParams.BaudRate = 38400;
 			dcbSerialParams.ByteSize = 8;
 			dcbSerialParams.StopBits = ONESTOPBIT;
-			dcbSerialParams.Parity = NOPARITY;
+			dcbSerialParams.Parity = EVENPARITY;
 			//Setting the DTR to Control_Enable ensures that the Arduino is properly
 			//reset upon establishing a connection
 			dcbSerialParams.fDtrControl = DTR_CONTROL_ENABLE;
@@ -122,7 +122,7 @@ int Serial::ReadData(char *buffer, unsigned int nbChar)
 }
 
 
-bool Serial::WriteData(const byte *buffer, unsigned int nbChar)
+bool Serial::WriteData(const char *buffer, unsigned int nbChar)
 {
 	DWORD bytesSend;
 

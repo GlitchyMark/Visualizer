@@ -34,7 +34,7 @@ public:
 	int ReadData(char *buffer, unsigned int nbChar);
 	//Writes data from a buffer through the Serial connection
 	//return true on success.
-	bool WriteData(const byte *buffer, unsigned int nbChar);
+	bool WriteData(const char *buffer, unsigned int nbChar);
 	//Check if we are actually connected
 	bool IsConnected();
 

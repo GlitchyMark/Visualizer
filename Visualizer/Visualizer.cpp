@@ -8,14 +8,16 @@
 #include "Bar.h"
 #include "FFT.h"
 #include "global.h"
-#include "Serial.h"
-#include "Communicator.h"
+//#include "Communicator.h"
 #include <chrono>
 #include <thread>
+#include "Serial.h"
+
+//TODO NEXT: Add threading to writefile and hope that fixes the lag. Also add a breaker at the end of the led buffer for writefile
 
 //Variables
 Variables vars;
-Communicator com;
+//Communicator com;
 //Visual variables
 const int rectWidth = 5;
 const int rectDist = 3;
@@ -50,9 +52,51 @@ void waveBoop(Bar* bars, float x, float y)
 		bars[i].addHeight(newHeight(i, sf::Vector2f(x, y)));
 }
 
+Serial *SP;
+vector<char> *bytes_buffer;
+bool *con;
+
+void start(LPCWSTR portName)
+{
+	SP = new Serial(portName);
+
+	cout << "How about here??" << endl;
+	if (SP->IsConnected())
+	{
+
+		cout << ("Connected, now constantly writing buffer") << endl;
+		while (true)
+		{
+			*con = true;
+			int bsize = bytes_buffer->size();
+			char *bytes = bytes_buffer->data();
+			if (bytes == NULL)
+				continue;
+			bytes_buffer->clear();
+			/*if (!SP->WriteData(bytes, bsize))
+			{
+				cout << "Didn't write!" << endl;
+			}*/
+			cout << "Wrote: " << endl;
+			for (int i = 0; i < bsize; i++)
+			{
+				cout << to_string((byte)bytes[i]) << ":";
+			}
+			cout << endl;
+		}
+	}
+	else
+		cout << "Could not establish connection." << endl;
+}
+
+
+bool connected = false;
+vector<char> buffer = vector<char>();
 int main()
 {
-	/*Serial* SP = new Serial(L"COM6");    // adjust as needed
+	Serial* SP = new Serial(L"COM6");
+	/*cout << "Hello" << endl;
+	Serial* SP = new Serial(L"COM6");    // adjust as needed
 
 	if (SP->IsConnected())
 		printf("We're connected");
@@ -60,9 +104,9 @@ int main()
 	int tick = 0;
 	while (SP->IsConnected())
 	{
-		byte bytes[4] = { 4,255,0,0 };
+		char bytes[10] = { 255, 4,254,254,254,255, 1,0,254,254 };
 
-		int byteSize = sizeof(bytes) / sizeof(byte);
+		int byteSize = 10;
 		if (!SP->WriteData(bytes, byteSize))
 		{
 			cout << "Didn't write!" << endl;
@@ -78,7 +122,9 @@ int main()
 
 	printf("Done?");
 	return 0;*/
-
+	//vector<char> byyt = vector<char>();
+	cout << "Hi" << endl;
+	//bytes_buffer = &byyt;
 
 	sf::RenderWindow window(sf::VideoMode(width, height), "Bar Visualizer");
 
@@ -88,7 +134,17 @@ int main()
 	FFT fft("", 16384);
 
 	//Connect to COM port
-	com = Communicator(L"COM6");
+	//com = Communicator(L"COM6", buffer, connected);
+	//Serial SP = Serial(L"COM6");
+
+	//con = &connected;
+	/*//bytes_buffer = &buffer;
+	*con = false;
+	//thread t(start, L"COM6");
+	while (!*con) {
+		cout << "Waiting!" << endl;
+	}*/
+
 
 	//Create Bars
 	Bar * bars;
@@ -135,7 +191,7 @@ int main()
 
 		//Tremor Bars by audio level
 		vector<int> aryBar = fft.getBarValues(vars.barCount);
-		vector<byte> bytes = vector<byte>();
+		vector<char> bytes = vector<char>();
 		for(int i = 0; i < aryBar.size(); i++)
 		waveBoop(bars, i, aryBar[i]);
 
@@ -147,13 +203,15 @@ int main()
 			rs.setFillColor(bars[i].getColor());
 			window.draw(rs);
 			bars[i].drawLeds(window);
-			vector<byte> tempBytes = bars[i].getLedsByte();
+			vector<char> tempBytes = bars[i].getLedsByte();
 			bytes.insert(bytes.end(), tempBytes.begin(), tempBytes.end());
 			//bars[i].printLedsByte();
 		}
-
-		com.writeBytes(bytes.data());
-		//cout << endl;
+		//byte byteee[4] = {3, 255, 1, 1};
+		if (SP->IsConnected())
+			SP->WriteData(bytes.data(), bytes.size());
+			//*bytes_buffer->insert(bytes_buffer->end(), bytes.begin(), bytes.end());
+		//cout << "ID:" << to_string(bytes.data()[0]) << "RED:" << to_string(bytes.data()[1]) << "GREEN:" << to_string(bytes.data()[2]) << "BLUE:" << to_string(bytes.data()[3]) << "?" << to_string(bytes.data()[4])<< endl;
 		
 		window.draw(text);
 		window.display();
