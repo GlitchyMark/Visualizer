@@ -96,7 +96,6 @@ int main()
 {
 	Serial* SP = new Serial(L"COM6");
 	/*cout << "Hello" << endl;
-	Serial* SP = new Serial(L"COM6");    // adjust as needed
 
 	if (SP->IsConnected())
 		printf("We're connected");
@@ -104,9 +103,9 @@ int main()
 	int tick = 0;
 	while (SP->IsConnected())
 	{
-		char bytes[10] = { 255, 4,254,254,254,255, 1,0,254,254 };
+		char bytes[9] = { 255, 254,254,254,254,254,254,254,254 };
 
-		int byteSize = 10;
+		int byteSize = 9;
 		if (!SP->WriteData(bytes, byteSize))
 		{
 			cout << "Didn't write!" << endl;
@@ -203,10 +202,28 @@ int main()
 			rs.setFillColor(bars[i].getColor());
 			window.draw(rs);
 			bars[i].drawLeds(window);
+			//bars[i].printLedsByte();
+		}
+
+		bytes.push_back(255);
+		for (int i = 0; i < vars.barCount; i++)
+		{
+			int Heightresult = bars[i].height / vars.maxHeight * 255;
+			if (Heightresult >= 255)
+				Heightresult = 254;
+			bytes.push_back(Heightresult);
+			std::cout << "Height for bar " << i << ":" << Heightresult << endl;
+		}
+		/*for (int i = 0; i < vars.barCount; i++)
+		{
+			sf::RectangleShape rs = createRect(i, bars[i].height);
+			rs.setFillColor(bars[i].getColor());
+			window.draw(rs);
+			bars[i].drawLeds(window);
 			vector<char> tempBytes = bars[i].getLedsByte();
 			bytes.insert(bytes.end(), tempBytes.begin(), tempBytes.end());
 			//bars[i].printLedsByte();
-		}
+		}*/
 		//byte byteee[4] = {3, 255, 1, 1};
 		if (SP->IsConnected())
 			SP->WriteData(bytes.data(), bytes.size());

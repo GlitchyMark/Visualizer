@@ -35,7 +35,6 @@ vector<Led> Bar::getLeds()
 		else
 			done = true;
 
-		//255*8/i wasn't working for some reason...
 		float rd = 255*i/ vars.ledHeight;
 		//std::cout << i << ": " << to_string(rd) << std::endl;
 		if (done)

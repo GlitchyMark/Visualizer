@@ -2,10 +2,10 @@
 
 //Variables
 struct Variables {
-	int barCount = 16;
-	float ledHeight = 3;
+	int barCount = 8;
+	float ledHeight = 8;
 	float maxHeight= 700;
-	float give = 100;
+	float give = 1000;
 	float lowRange = 3 + .8;
 	float highRange = 3 + .75;
 	float sensivity = 500;

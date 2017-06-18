@@ -44,7 +44,7 @@ Serial::Serial(LPCWSTR portName)
 		else
 		{
 			//Define serial connection parameters for the arduino board
-			dcbSerialParams.BaudRate = 38400;
+			dcbSerialParams.BaudRate = 9600;
 			dcbSerialParams.ByteSize = 8;
 			dcbSerialParams.StopBits = ONESTOPBIT;
 			dcbSerialParams.Parity = EVENPARITY;
